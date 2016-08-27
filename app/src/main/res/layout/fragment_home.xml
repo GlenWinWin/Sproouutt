@@ -6,14 +6,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvCityCountry"
-        android:text="City"
         android:layout_centerHorizontal="true"
         android:textSize="20dp"/>
     <ImageView
         android:layout_width="200dp"
         android:layout_height="150dp"
         android:id="@+id/ivWeatherIcon"
-        android:src="@drawable/treelock"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/tvCityCountry"/>
     <TextView
@@ -21,7 +19,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvDescription"
-        android:text="Description"
         android:layout_centerHorizontal="true"
         android:textSize="25dp"/>
     <TextView
@@ -29,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvHumidity"
-        android:text=""
         android:layout_centerHorizontal="true"
         android:textSize="25dp"/>
     <TextView
@@ -37,7 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvTemperature"
-        android:text="Temperature"
         android:layout_centerHorizontal="true"
         android:textSize="25dp"/>
     <TextView
@@ -45,7 +40,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvPressure"
-        android:text="Pressure"
         android:layout_centerHorizontal="true"
         android:textSize="25dp"/>
 

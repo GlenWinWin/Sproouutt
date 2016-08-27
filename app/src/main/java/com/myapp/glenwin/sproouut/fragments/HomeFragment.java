@@ -92,60 +92,13 @@ public class HomeFragment extends Fragment {
             }
             JSONObject main = response.getJSONObject("main");
             tvHumidity.setText("Humidity : " +main.getString("humidity")+"%");
-            tvTemperature.setText("Temperature : " +String.format("%.2f", main.getDouble("temp"))+ " ℃");
+            tvTemperature.setText("Temperature : " +String.format("%.2f", main.getDouble("temp") - 273.15)+ " ℃");
             tvPressure.setText("Pressure : " + main.getString("pressure") + " hPa");
 
-//            }
 
         }catch (JSONException e){
             e.printStackTrace();
         }
     }
-//    {
-//        "coord": {
-//        "lon": 121.18,
-//                "lat": 14.17
-//    },
-//        "weather": [
-//        {
-//            "id": 500,
-//                "main": "Rain",
-//                "description": "light rain",
-//                "icon": "10n"
-//        }
-//        ],
-//        "base": "stations",
-//        "main": {
-//        "temp": 299.325,
-//                "pressure": 1008.84,
-//                "humidity": 100,
-//                "temp_min": 299.325,
-//                "temp_max": 299.325,
-//                "sea_level": 1023.07,
-//                "grnd_level": 1008.84
-//    },
-//        "wind": {
-//        "speed": 6.26,
-//                "deg": 247.503
-//    },
-//        "rain": {
-//        "3h": 0.395
-//    },
-//        "clouds": {
-//        "all": 80
-//    },
-//        "dt": 1472294639,
-//            "sys": {
-//        "message": 0.0314,
-//                "country": "PH",
-//                "sunrise": 1472247790,
-//                "sunset": 1472292595
-//    },
-//        "id": 1705539,
-//            "name": "Los Baños",
-//            "cod": 200
-//    }
-
-//    String.format("%.2f", main.getDouble("temp"))+ " ℃");
 
 }
