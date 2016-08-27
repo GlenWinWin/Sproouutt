@@ -43,4 +43,12 @@
         android:layout_centerHorizontal="true"
         android:textSize="25dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPressure"
+        android:layout_centerHorizontal="true"
+        android:textSize="25dp"
+        android:id="@+id/currentPoints"/>
+
 </RelativeLayout>

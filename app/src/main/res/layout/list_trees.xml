@@ -9,15 +9,23 @@
     <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textSize="9sp"
-    android:layout_below="@+id/ivTree"
-    android:text="Tree Name"
-    android:id="@+id/treeName" />
+        android:textSize="15sp"
+        android:layout_below="@+id/ivTree"
+    android:id="@+id/treeName"/>
     <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Points"
-    android:textSize="9sp"
+        android:textStyle="bold"
+    android:textSize="19sp"
+        android:layout_marginLeft="37dp"
     android:layout_below="@+id/treeName"
     android:id="@+id/tvTreePoints" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="9sp"
+        android:visibility="invisible"
+        android:layout_below="@+id/tvTreePoints"
+        android:id="@+id/treeId"/>
 </RelativeLayout>

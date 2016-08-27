@@ -2,12 +2,14 @@ package com.myapp.glenwin.sproouut.fragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,13 +20,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.myapp.glenwin.sproouut.R;
+import com.myapp.glenwin.sproouut.adapter.CustomListAdapter;
 import com.myapp.glenwin.sproouut.api.JSONObjectRequest;
 import com.myapp.glenwin.sproouut.host.ReturnHost;
+import com.myapp.glenwin.sproouut.utils.Preferences;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -35,8 +45,12 @@ public class HomeFragment extends Fragment {
     String host = rhost.returnHost();
     private String urlForGettingWeatherCondition = "http://api.openweathermap.org/data/2.5/weather?q=Los%20Ba%C3%B1os,Philippines&APPID=73caff86339604776803ac447986a99c";
     private String urlforWeatherIcon = "http://openweathermap.org/img/w/";
+    private String urlForTree = "http://"+host+"/forest/trees/";
+    private String urlForFetchTrees = "http://"+host+"/forest/getBoughtTrees.php";
     ProgressDialog pDialog;
-    TextView tvCityCountry,tvDescription,tvHumidity,tvTemperature,tvPressure;
+    GridView list;
+    String result;
+    TextView tvCityCountry,tvDescription,tvHumidity,tvTemperature,tvPressure,tvCurrentPoints;
     ImageView ivWeatherIcon;
     private RequestQueue queue;
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -45,12 +59,17 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        if(Preferences.ifHasPoints(getActivity()) == false){
+            Preferences.putDefaultPoints(getActivity());
+        }
+        list = (GridView) rootView.findViewById(R.id.gridview);
         tvCityCountry = (TextView)rootView.findViewById(R.id.tvCityCountry);
         tvDescription = (TextView)rootView.findViewById(R.id.tvDescription);
         tvHumidity = (TextView)rootView.findViewById(R.id.tvHumidity);
         tvTemperature = (TextView)rootView.findViewById(R.id.tvTemperature);
         tvPressure = (TextView)rootView.findViewById(R.id.tvPressure);
         ivWeatherIcon = (ImageView)rootView.findViewById(R.id.ivWeatherIcon);
+        tvCurrentPoints = (TextView)rootView.findViewById(R.id.currentPoints);
         queue = Volley.newRequestQueue(getActivity());
 
         getWeatherCondition();
@@ -94,7 +113,7 @@ public class HomeFragment extends Fragment {
             tvHumidity.setText("Humidity : " +main.getString("humidity")+"%");
             tvTemperature.setText("Temperature : " +String.format("%.2f", main.getDouble("temp") - 273.15)+ " ℃");
             tvPressure.setText("Pressure : " + main.getString("pressure") + " hPa");
-
+            tvCurrentPoints.setText("Tree Points : " + Preferences.getTreePoints(getActivity()));
 
         }catch (JSONException e){
             e.printStackTrace();

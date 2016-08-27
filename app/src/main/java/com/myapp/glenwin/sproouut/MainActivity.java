@@ -1,6 +1,9 @@
 package com.myapp.glenwin.sproouut;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -8,11 +11,14 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.provider.Settings;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,10 +28,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.identity.intents.Address;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,19 +43,40 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.myapp.glenwin.sproouut.adapter.CustomListAdapter;
 import com.myapp.glenwin.sproouut.fragments.HomeFragment;
-import com.myapp.glenwin.sproouut.fragments.PlantATreeFragment;
-import com.myapp.glenwin.sproouut.fragments.UpdatePromoFragment;
+import com.myapp.glenwin.sproouut.fragments.MeasureTreeAgeFragment;
+import com.myapp.glenwin.sproouut.host.ReturnHost;
+import com.myapp.glenwin.sproouut.utils.Preferences;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback,LocationListener {
+    ReturnHost rhost = new ReturnHost();
+    String host = rhost.returnHost();
+    private String urlForTree = "http://"+host+"/forest/trees/";
+    private String urlForFetchTrees = "http://"+host+"/forest/fetchForest.php";
+    private String urlUpdateTree = "http://"+host+"/forest/updateTree.php";
     SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
-    String mylocation = "";
+    ProgressDialog pDialog;
+    String result;
+
+    private BottomSheetBehavior bottomSheetBehavior;
+    private View bottomSheet;
+    GridView list;
 
 
     @Override
@@ -55,9 +84,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         supportMapFragment = SupportMapFragment.newInstance();
-
+        bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setPeekHeight(500);
+        bottomSheetBehavior.setHideable(true);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,7 +104,13 @@ public class MainActivity extends AppCompatActivity
 
         android.app.FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new HomeFragment()).commit();
-        getSupportActionBar().setTitle("Home");
+        FragmentManager mapFragmentManager = getSupportFragmentManager();
+
+        if(!supportMapFragment.isAdded())
+            mapFragmentManager.beginTransaction().add(R.id.maps,supportMapFragment).commit();
+        else
+            mapFragmentManager.beginTransaction().show(supportMapFragment).commit();
+        getSupportActionBar().setTitle("Plant A Tree");
 
         supportMapFragment.getMapAsync(this);
     }
@@ -129,6 +169,7 @@ public class MainActivity extends AppCompatActivity
             title = "Plant a Tree";
         } else if (id == R.id.nav_age) {
             title = "Measure Age of Tree";
+            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new MeasureTreeAgeFragment()).commit();
         } else if (id == R.id.nav_report) {
             title = "Report";
         }
@@ -199,9 +240,8 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public boolean onMarkerClick(Marker marker) {
-                    Toast.makeText(MainActivity.this, "Clickable :)", Toast.LENGTH_LONG).show();
-                    //dito mo lagay glen :)
-                    return false;
+                    updateBottomSheetContent();
+                    return true;
                 }
             });
         }
@@ -221,9 +261,8 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public boolean onMarkerClick(Marker marker) {
-                    Toast.makeText(MainActivity.this, "Clickable :)", Toast.LENGTH_LONG).show();
-                    //dito mo lagay glen :)
-                    return false;
+                    updateBottomSheetContent();
+                    return true;
                 }
             });
         }
@@ -243,12 +282,17 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public boolean onMarkerClick(Marker marker) {
-                    Toast.makeText(MainActivity.this, "Clickable :)", Toast.LENGTH_LONG).show();
-                    //dito mo lagay glen :)
-                    return false;
+                    updateBottomSheetContent();
+                    return true;
                 }
             });
         }
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -268,10 +312,211 @@ public class MainActivity extends AppCompatActivity
         if (location != null) {
             onLocationChanged(location);
         }
+
     }
 
     @Override
     public void onLocationChanged(Location location) {
-    }
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        LatLng latlng = new LatLng(latitude, longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(7));
 
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<android.location.Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(addresses.size() > 0 ){
+                android.location.Address address = addresses.get(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void updateBottomSheetContent() {
+        list = (GridView) findViewById(R.id.gridview);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final String points = ((TextView) view.findViewById(R.id.tvTreePoints)).getText().toString();
+                final String treeid = ((TextView) view.findViewById(R.id.treeId)).getText().toString();
+                try {
+                    if (Preferences.getTreePoints(getApplicationContext()) >= Integer.parseInt(points)) {
+                        AlertDialog.Builder builder2 = new AlertDialog.Builder(MainActivity.this);
+                        builder2.setMessage("Do you want to buy this tree?");
+                        builder2.setCancelable(true);
+                        builder2.setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog2, int id) {
+                                        updateTrees(treeid,Preferences.getTreePoints(getApplicationContext())-Integer.parseInt(points));
+                                    }
+                                });
+                        builder2.setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog2, int id) {
+                                        dialog2.cancel();
+                                    }
+                                });
+                        AlertDialog alert12 = builder2.create();
+                        alert12.show();
+                    } else {
+                        AlertDialog.Builder builder2 = new AlertDialog.Builder(MainActivity.this);
+                        builder2.setTitle("Sorry");
+                        builder2.setMessage("Not enough points!");
+                        builder2.setIcon(android.R.drawable.stat_sys_warning);
+                        builder2.setCancelable(true);
+                        builder2.setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog2, int id) {
+                                        dialog2.cancel();
+                                    }
+                                });
+                        AlertDialog alert12 = builder2.create();
+                        alert12.show();
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        fetchTrees();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+    public void fetchTrees(){
+        class TreeFetch extends AsyncTask<String, Void, String> {
+
+            /**
+             * Before starting background thread Show Progress Dialog
+             * */
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                pDialog = new ProgressDialog(MainActivity.this);
+                pDialog.setMessage("Getting Trees...");
+                pDialog.setIndeterminate(false);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
+
+            /**
+             * getting All products from url
+             * */
+            protected String doInBackground(String... args) {
+                BufferedReader bufferedReader;
+
+                try {
+                    URL url = new URL(urlForFetchTrees);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    Log.e("log_tag", "Error converting result" + e.toString());
+                }
+                return result;
+            }
+
+            /**
+             * After completing background task Dismiss the progress dialog
+             * **/
+            protected void onPostExecute(String file_url) {
+                // dismiss the dialog after getting all products
+                pDialog.dismiss();
+                fetchallTrees();
+            }
+        }
+        TreeFetch treeFetch = new TreeFetch();
+        treeFetch.execute();
+    }
+    public void fetchallTrees(){
+        try {
+
+            JSONArray jArray = new JSONArray(result);
+            ArrayList<String> treeNames = new ArrayList<>();
+            ArrayList<String> treePoints = new ArrayList<>();
+            ArrayList<String> treeLockPics = new ArrayList<>();
+            ArrayList<String> treeIds = new ArrayList<>();
+
+            for(int i=0;i<jArray.length();i++){
+                JSONObject c = jArray.getJSONObject(i);
+                treeIds.add(c.getString("tree_id"));
+                treeNames.add(c.getString("tree_name"));
+                treePoints.add(c.getString("point"));
+                treeLockPics.add(urlForTree + c.getString("pic"));
+            }
+            CustomListAdapter adapter = new CustomListAdapter(MainActivity.this,treeNames,treePoints,treeLockPics,treeIds);
+            list.setAdapter(adapter);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateTrees(final String treeID, final int remainingPoints){
+        class UpdateTree extends AsyncTask<String, Void, String> {
+
+            /**
+             * Before starting background thread Show Progress Dialog
+             * */
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                pDialog = new ProgressDialog(MainActivity.this);
+                pDialog.setMessage("Processing Request...");
+                pDialog.setIndeterminate(false);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
+
+            /**
+             * getting All products from url
+             * */
+            protected String doInBackground(String... args) {
+                BufferedReader bufferedReader;
+
+                try {
+                    URL url = new URL(urlUpdateTree+"?tree_id="+treeID);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    Log.e("log_tag", "Error converting result" + e.toString());
+                }
+                return result;
+            }
+
+            /**
+             * After completing background task Dismiss the progress dialog
+             * **/
+            protected void onPostExecute(String file_url) {
+                // dismiss the dialog after getting all products
+                pDialog.dismiss();
+                Preferences.setTreePoints(getApplicationContext(),0);
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(MainActivity.this);
+                builder2.setTitle("Congratulations!!!");
+                builder2.setMessage("You have unlock a new plant");
+                builder2.setCancelable(true);
+                builder2.setNegativeButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog2, int id) {
+                                startActivity(new Intent(MainActivity.this,MainActivity.class));
+                                finish();
+                            }
+                        });
+                AlertDialog alert12 = builder2.create();
+                alert12.show();
+
+            }
+        }
+        UpdateTree updateTree = new UpdateTree();
+        updateTree.execute();
+    }
 }

@@ -26,13 +26,15 @@ public class CustomListAdapter extends ArrayAdapter<String> {
     private ArrayList<String> treeNames;
     private ArrayList<String> treePoints;
     private ArrayList<String> treeLockPics;
+    private ArrayList<String> treeIds;
 
-    public CustomListAdapter(Context context, ArrayList<String> treeNames, ArrayList<String> treePoints, ArrayList<String> treeLockPics) {
+    public CustomListAdapter(Context context, ArrayList<String> treeNames, ArrayList<String> treePoints, ArrayList<String> treeLockPics, ArrayList<String> treeIds) {
         super(context,R.layout.list_trees,treeNames);
         mContext = context;
         this.treeNames = treeNames;
         this.treePoints = treePoints;
         this.treeLockPics = treeLockPics;
+        this.treeIds = treeIds;
 
     }
     @Override
@@ -47,9 +49,11 @@ public class CustomListAdapter extends ArrayAdapter<String> {
             grid = inflater.inflate(R.layout.list_trees, null,false);
             TextView tvTreeName = (TextView) grid.findViewById(R.id.treeName);
             TextView tvPoint = (TextView)grid.findViewById(R.id.tvTreePoints);
+            TextView tvId = (TextView)grid.findViewById(R.id.treeId);
             ImageView imageLockTree = (ImageView) grid.findViewById(R.id.ivTree);
-            tvTreeName.setText("Tree Name: " + treeNames.get(position));
-            tvPoint.setText("Tree Point: " +treePoints.get(position));
+            tvTreeName.setText(treeNames.get(position));
+            tvPoint.setText(treePoints.get(position));
+            tvId.setText(treeIds.get(position));
             Picasso.with(mContext)
                     .load(treeLockPics.get(position))
                     .into(imageLockTree);
