@@ -44,8 +44,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.myapp.glenwin.sproouut.adapter.CustomListAdapter;
+import com.myapp.glenwin.sproouut.fragments.AccumulateFragment;
+import com.myapp.glenwin.sproouut.fragments.EcoFragment;
 import com.myapp.glenwin.sproouut.fragments.HomeFragment;
 import com.myapp.glenwin.sproouut.fragments.MeasureTreeAgeFragment;
+import com.myapp.glenwin.sproouut.fragments.ReportFragment;
+import com.myapp.glenwin.sproouut.fragments.TempFragment;
 import com.myapp.glenwin.sproouut.host.ReturnHost;
 import com.myapp.glenwin.sproouut.utils.Preferences;
 
@@ -167,11 +171,20 @@ public class MainActivity extends AppCompatActivity
             else
                 mapFragmentManager.beginTransaction().show(supportMapFragment).commit();
             title = "Plant a Tree";
-        } else if (id == R.id.nav_age) {
+        }
+        else if(id == R.id.nav_eco){
+            title = "Ecosystem";
+            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new EcoFragment()).commit();
+        }else if (id == R.id.nav_age) {
             title = "Measure Age of Tree";
-            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new MeasureTreeAgeFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new TempFragment()).commit();
         } else if (id == R.id.nav_report) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new ReportFragment()).commit();
             title = "Report";
+        }
+        else{
+            fragmentManager.beginTransaction().replace(R.id.content_frame_for_fragments,new AccumulateFragment()).commit();
+            title = "Accumulate Point";
         }
         getSupportActionBar().setTitle(title);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -24,6 +24,7 @@
 
     <include layout="@layout/content_main"/>
 
+
     <android.support.v4.widget.NestedScrollView android:id="@+id/bottom_sheet"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="#FAF9E5" android:clipToPadding="true"

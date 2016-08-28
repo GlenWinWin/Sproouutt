@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
     ProgressDialog pDialog;
     GridView list;
     String result;
-    TextView tvCityCountry,tvDescription,tvHumidity,tvTemperature,tvPressure,tvCurrentPoints;
+    TextView tvCityCountry,tvDescription,tvHumidity,tvTemperature,tvPressure;
     ImageView ivWeatherIcon;
     private RequestQueue queue;
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -69,7 +69,6 @@ public class HomeFragment extends Fragment {
         tvTemperature = (TextView)rootView.findViewById(R.id.tvTemperature);
         tvPressure = (TextView)rootView.findViewById(R.id.tvPressure);
         ivWeatherIcon = (ImageView)rootView.findViewById(R.id.ivWeatherIcon);
-        tvCurrentPoints = (TextView)rootView.findViewById(R.id.currentPoints);
         queue = Volley.newRequestQueue(getActivity());
 
         getWeatherCondition();
@@ -113,7 +112,6 @@ public class HomeFragment extends Fragment {
             tvHumidity.setText("Humidity : " +main.getString("humidity")+"%");
             tvTemperature.setText("Temperature : " +String.format("%.2f", main.getDouble("temp") - 273.15)+ " ℃");
             tvPressure.setText("Pressure : " + main.getString("pressure") + " hPa");
-            tvCurrentPoints.setText("Tree Points : " + Preferences.getTreePoints(getActivity()));
 
         }catch (JSONException e){
             e.printStackTrace();

@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@drawable/measure_bg">
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/measure_bg">
     <EditText
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:textSize="50dp"
         android:layout_marginTop="145dp"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:textColor="#4CAF50"
+        android:inputType="number"
+        android:id="@+id/edCm"
+        android:layout_marginLeft="90dp"/>
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:textSize="50dp"
+            android:inputType="number"
+            android:layout_marginTop="195dp"
+            android:padding="10dp"
+            android:textColor="#4CAF50"
+            android:layout_below="@+id/edCm"
+            android:id="@+id/edAge"
+            android:layout_marginLeft="90dp"/>
+    </RelativeLayout>
 </RelativeLayout>

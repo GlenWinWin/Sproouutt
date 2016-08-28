@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:allowBackup="true"
@@ -23,13 +24,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".PlantsAnimals"/>
+        <activity
+            android:name=".ListWithPictures"/>
+        <activity
+            android:name=".ListWithPicturesPlants"/>
+        <activity
+            android:name=".SubDetails"/>
+        <activity
+            android:name=".SubDetailsPlants"/>
+        <activity android:name=".Report2"></activity>
     </application>
 
 </manifest>

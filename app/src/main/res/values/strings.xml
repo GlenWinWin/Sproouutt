@@ -1,9 +1,80 @@
 <resources>
-    <string name="app_name">Sproouut</string>
+    <string name="app_name">Sprout</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
+
+    <string-array name="animalNames">
+        <item>Mindoro Crocodile</item>
+        <item>Mindoro Bleeding Heart</item>
+        <item>Rufous-Headed Hornbill</item>
+        <item>Hawksbill Sea Turtle</item>
+        <item>Red-vented Cockatoo</item>
+        <item>Philippine Forest Turtle</item>
+        <item>Philippine Naked-Backed Fruitbat</item>
+        <item>Visayan Warty Pig</item>
+        <item>Tamaraw</item>
+        <item>Philippine Eagle</item>
+
+    </string-array>
+
+    <array name="animal_picture">
+        <item>@drawable/animalone</item>
+        <item>@drawable/animalstwo</item>
+        <item>@drawable/animalthree</item>
+        <item>@drawable/animalsfour</item>
+        <item>@drawable/animalfive</item>
+        <item>@drawable/animalsix</item>
+        <item>@drawable/animalseven</item>
+        <item>@drawable/animaleight</item>
+        <item>@drawable/animalnine</item>
+        <item>@drawable/animalsten</item>
+
+    </array>
+
+    <string-array name="plantNames">
+        <item>Almasiga</item>
+        <item>Ardisia</item>
+        <item>Aunasin</item>
+        <item>Amugis</item>
+        <item>Balayong</item>
+        <item>Balitbitan</item>
+        <item>Banuyo</item>
+        <item>Bayag-usa</item>
+        <item>Lamog</item>
+        <item>Malak-malak</item>
+        <item>Pili</item>
+        <item>Podocarpus</item>
+        <item>Potat</item>
+        <item>Santiki Paitan</item>
+        <item>Tamayuan</item>
+        <item>Taxus</item>
+        <item>Toog</item>
+
+    </string-array>
+
+    <array name="plant_picture">
+        <item>@drawable/almaciga</item>
+        <item>@drawable/ardisia</item>
+        <item>@drawable/aunasin</item>
+        <item>@drawable/amugis</item>
+        <item>@drawable/balayog</item>
+        <item>@drawable/balitbitan</item>
+        <item>@drawable/banuyo</item>
+        <item>@drawable/bayagusa</item>
+        <item>@drawable/lamog</item>
+        <item>@drawable/malakmalak</item>
+        <item>@drawable/pili</item>
+        <item>@drawable/podocarpus</item>
+        <item>@drawable/potat</item>
+        <item>@drawable/santiki</item>
+        <item>@drawable/tamayuan</item>
+        <item>@drawable/taxus</item>
+        <item>@drawable/toog</item>
+
+
+    </array>
 </resources>

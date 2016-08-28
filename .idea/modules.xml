@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Sproouut.iml" filepath="$PROJECT_DIR$/Sproouut.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sproouutt.iml" filepath="$PROJECT_DIR$/Sproouutt.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

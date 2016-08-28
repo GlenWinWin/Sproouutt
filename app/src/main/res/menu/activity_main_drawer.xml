@@ -8,6 +8,10 @@
         android:id="@+id/nav_tree"
         android:icon="@drawable/ic_public_black_24dp"
         android:title="Plant a tree" />
+    <item
+        android:id="@+id/nav_eco"
+        android:icon="@drawable/ic_cached_black_24dp"
+        android:title="Ecosystem" />
     <item android:title="Forest Kit">
         <menu>
             <item
@@ -20,7 +24,10 @@
                 android:title="Report" />
         </menu>
     </item>
-
+    <item
+        android:id="@+id/nav_points"
+        android:icon="@drawable/ic_exposure_plus_1_black_24dp"
+        android:title="Accumulate Points" />
 
 
 </menu>
